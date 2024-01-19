@@ -5,7 +5,11 @@ pipeline {
             args '-p 3000:3000' 
         }
     }
-     stages {
+    triggers {
+        pollSCM('*/2 * * * *')
+    }
+    
+    stages {
         stage('Build') { 
             steps {
                 sh 'npm install' 
@@ -14,6 +18,13 @@ pipeline {
        stage('Test') {
             steps {
                 sh './jenkins/scripts/test.sh'
+            }
+        }
+       stage('Deploy') {
+            steps {
+                sh './jenkins/scripts/deliver.sh'
+                input message: 'Sudah selesai menggunakan React Apps? (Klik "Proceed" untuk mengakhiri)'
+                sh './jenkins/scripts/kill.sh'
             }
         }
     }
