@@ -1,4 +1,4 @@
-pipeline {
+ipeline {
     agent {
         docker {
             image 'node:16-buster-slim' 
@@ -9,18 +9,18 @@ pipeline {
         pollSCM('*/2 * * * *')
     }
     
-    stages {
-        stage('Build') { 
+    stage {
+        ('Build') { 
             steps {
                 sh 'npm install' 
             }
         }
-       stage('Test') {
+       ('Test') {
             steps {
                 sh './jenkins/scripts/test.sh'
             }
         }
-       stage('Deploy') {
+       ('Deploy') {
             steps {
                 sh './jenkins/scripts/deliver.sh'
                 input message: 'Sudah selesai menggunakan React Apps? (Klik "Proceed" untuk mengakhiri)'
