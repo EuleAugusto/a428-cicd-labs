@@ -1,30 +1,26 @@
-pipeline {
-    agent {
-        docker {
-            image 'node:16-buster-slim' 
-            args '-p 3000:3000' 
-        }
-    }
-    triggers {
-        pollSCM('H/2 * * * *')
-    }
-    stages {
-        stage('Build') { 
-            steps {
-                sh 'npm install' 
+node {
+    //scripted
+ stage('Build') {
+        docker.image('node:16-buster-slim').inside('-p 3000:3000') {
+                sh 'npm install'
             }
         }
-       stage('Test') {
-            steps {
+ stage('Test') {
+        docker.image('node:16-buster-slim').inside('-p 3000:3000') {
                 sh './jenkins/scripts/test.sh'
             }
-        }
-       stage('Deploy') {
-            steps {
+        } 
+ stage('Manual Approval') {
+        docker.image('node:16-buster-slim').inside('-p 3000:3000') {
+                input message: 'Lanjutkan ke tahap Deploy (klik "Proceed" untuk lanjut atau klik "Abort" untuk berhenti)'
+            }
+         }
+ stage('Deploy') {
+        docker.image('node:16-buster-slim').inside('-p 3000:3000') {
                 sh './jenkins/scripts/deliver.sh'
                 input message: 'Sudah selesai menggunakan React Apps? (Klik "Proceed" untuk mengakhiri)'
+                sleep(60)
                 sh './jenkins/scripts/kill.sh'
             }
         }
-    }
-}
+ }
